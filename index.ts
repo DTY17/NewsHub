@@ -16,7 +16,6 @@ app.use(express.json());
 app.use(cors({
   origin: [ "http://localhost:5173", "https://news-hub-lime-two.vercel.app" ],
   methods: ["GET", "POST","OPTION","PUT"],        
-
 }));
 
 app.use('/api/abc/user',authrouter)
