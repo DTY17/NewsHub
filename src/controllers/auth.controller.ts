@@ -17,10 +17,10 @@ export const registerUser = async (req: Request, res: Response) => {
     console.log(req.body);
     const { firstname, lastname, email, password, roles, watchlist } = req.body;
 
-    // const existingUser = await User.findOne({ email });
-    // if (existingUser) {
-    //   return res.status(400).json({ message: "Email exists" });
-    // }
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email exists" });
+    }
 
     const hash = await bcrypt.hash(password, 10);
 
@@ -29,7 +29,7 @@ export const registerUser = async (req: Request, res: Response) => {
       lastname: lastname,
       email: email,
       password: hash,
-      roles: [Role.Admin],
+      roles: [Role.User],
       watchlist: watchlist,
     });
 
