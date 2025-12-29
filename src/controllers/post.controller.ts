@@ -21,7 +21,6 @@ export async function insert(req: Request, res: Response) {
       message: "successfully saved",
     });
   } catch (err) {
-    // console.log(err);
     res.status(200).json({
       message: "Error occured",
       error: err,
