@@ -138,6 +138,10 @@ export async function mostPopular(req: Request, res: Response) {
       posts = await Post.find({ genre: genre }).sort({ views: -1 }).limit(9);
     }
 
+    if (!posts || posts.length === 0) {
+      return res.status(200).json({ message: "No posts found", data: [] });
+    }
+
     res.status(200).json({
       message: "successfully recieved",
       data: posts,
@@ -156,6 +160,11 @@ export async function mostView(req: Request, res: Response) {
     } else {
       posts = await Post.find({ genre: genre }).sort({ views: -1 }).limit(9);
     }
+
+    if (!posts || posts.length === 0) {
+      return res.status(200).json({ message: "No posts found", data: [] });
+    }
+
     res.status(200).json({
       message: "successfully recieved",
       data: posts,
@@ -176,6 +185,11 @@ export async function recent(req: Request, res: Response) {
       posts = await Post.find({ genre: genre }).sort({ date: -1 }).limit(9);
     }
     // console.log("recent", posts);
+
+    if (!posts || posts.length === 0) {
+      return res.status(200).json({ message: "No posts found", data: [] });
+    }
+    
     res.status(200).json({
       message: "successfully recieved",
       data: posts,
