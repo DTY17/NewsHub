@@ -2,7 +2,7 @@
 import mongoose, { Document, Schema } from "mongoose"
 
 export enum Genre{
-    Finance , Sport , Technology , Environment , Health , Business , Travel , Politics , 
+    Finance , Sports , Technology , Environment , Health , Business , Travel , Politics , 
 }
 
 export enum ContentOrder{
