@@ -176,7 +176,7 @@ export const loginAdmin = async (req: Request, res: Response) => {
         });
       }
     } else {
-      return res.status(401).json({
+      return res.status(402).json({
         message: "invalid credentials",
       });
     }
