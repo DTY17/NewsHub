@@ -56,14 +56,22 @@ export async function searchPost(req: Request, res: Response) {
       filter.genre = { $regex: genre, $options: "i" };
     }
 
-    const u = await User.findOne({ email: user });
-    if (!u) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
     const posts = await Post.find(filter).skip(skip).limit(limit);
-    const watch_list = u.watchlist?.length || 0;
+    const u = await User.findOne({ email: user });
+    const total = await Post.countDocuments(filter);
 
+    if (!u) {
+      return (res.status(200).json({
+        message: "successfully received",
+        data: {
+          posts,
+          total,
+          currentPage: parseInt(page),
+          totalPages: Math.ceil(total / limit),
+        },
+      }));
+    }
+    const watch_list = u.watchlist?.length || 0;
     posts.forEach((post) => {
       post.isWatchList = false;
     });
@@ -75,7 +83,6 @@ export async function searchPost(req: Request, res: Response) {
         }
       }
     }
-    const total = await Post.countDocuments(filter);
 
     res.status(200).json({
       message: "successfully received",
