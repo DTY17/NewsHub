@@ -356,7 +356,7 @@ export async function setLoadWatchlist(req: Request, res: Response) {
 export async function getLoadWatchlist(req: Request, res: Response) {
   try {
     const { user } = req.params;
-    const users = await User.findOne({_id: user}).populate('watchlist');
+    const users = await User.findOne({email: user}).populate('watchlist');
 
     if(!users) return res.status(404).json({
       message: "No user",
