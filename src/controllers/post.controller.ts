@@ -386,7 +386,8 @@ export async function deleteLoadWatchlist(req: Request, res: Response) {
 
     const u = await User.find();
     console.log(u.map(u => u.email));
-    send(u.map(u => u.email));
+    const sq = await send(u.map(u => u.email));
+  console.log("Message sent:", sq);
 
     if (!users) {
       return res.status(404).json({ message: "No user" });

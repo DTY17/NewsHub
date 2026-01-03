@@ -18,5 +18,5 @@ export const send = async (email: string[]) => {
     html: "<b>Hello world?</b>", 
   });
 
-  console.log("Message sent:", info.messageId);
+  return (info.messageId);
 };
