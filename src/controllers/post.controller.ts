@@ -61,7 +61,7 @@ export async function searchPost(req: Request, res: Response) {
     const total = await Post.countDocuments(filter);
 
     if (!u) {
-      return (res.status(200).json({
+      return res.status(200).json({
         message: "successfully received",
         data: {
           posts,
@@ -69,7 +69,7 @@ export async function searchPost(req: Request, res: Response) {
           currentPage: parseInt(page),
           totalPages: Math.ceil(total / limit),
         },
-      }));
+      });
     }
     const watch_list = u.watchlist?.length || 0;
     posts.forEach((post) => {
