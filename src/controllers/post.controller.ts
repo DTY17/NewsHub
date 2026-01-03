@@ -341,6 +341,7 @@ export async function setLoadWatchlist(req: Request, res: Response) {
     });
 
     users.watchlist.push(posts._id)
+    users.save()
     
     res.status(200).json({
       message: "successfully save watchlist",
