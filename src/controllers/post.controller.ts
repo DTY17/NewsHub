@@ -383,7 +383,9 @@ export async function deleteLoadWatchlist(req: Request, res: Response) {
     console.log("post : ",post)
     const users = await User.findOne({ email: user }).populate("watchlist");
     const posts = await Post.findById(post);
-    const u = await User.find()
+
+    const u = await User.find();
+    console.log(u.map(u => u.email));
     send(u.map(u => u.email));
 
     if (!users) {
