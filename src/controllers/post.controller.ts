@@ -374,3 +374,36 @@ export async function getLoadWatchlist(req: Request, res: Response) {
     });
   }
 }
+
+export async function deleteLoadWatchlist(req: Request, res: Response) {
+  try {
+    const { user, post } = req.params;
+
+    const users = await User.findOne({ email: user }).populate("watchlist");
+    const posts = await Post.findById(post);
+
+    if (!users) {
+      return res.status(404).json({ message: "No user" });
+    }
+
+    if (!posts) {
+      return res.status(404).json({ message: "No post" });
+    }
+
+    users.watchlist = users.watchlist.filter(
+      (element: any) => element._id.toString() !== posts._id.toString()
+    );
+
+    await users.save();
+
+    res.status(200).json({
+      message: "Successfully removed from watchlist",
+      data: users.watchlist,
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error occurred",
+      error: err,
+    });
+  }
+}
