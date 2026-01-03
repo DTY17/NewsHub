@@ -14,6 +14,8 @@ import {
   increaseView,
   postCount,
   getViewSum,
+  getLoadWatchlist,
+  setLoadWatchlist,
 } from "../controllers/post.controller";
 import { Role } from "../models/userModel";
 import { roleCheck } from "../middleware/roleCheck";
@@ -39,5 +41,7 @@ postRouter.post("/post-by-id-view/:id", increaseView);
 postRouter.post("/post-by-id-view/:id", increaseView);
 postRouter.post("/count", postCount);
 postRouter.post("/view-count", getViewSum);
+postRouter.post("/get-load-watchlist/:user", getLoadWatchlist);
+postRouter.post("/set-load-watchlist/:post/:user", setLoadWatchlist);
 
 export default postRouter;

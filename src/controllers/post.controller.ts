@@ -71,7 +71,7 @@ export async function searchPost(req: Request, res: Response) {
         },
       });
     }
-    
+
     const watch_list = u.watchlist?.length || 0;
     posts.forEach((post) => {
       post.isWatchList = false;
@@ -325,32 +325,46 @@ export async function getViewSum(req: Request, res: Response) {
   }
 }
 
+export async function setLoadWatchlist(req: Request, res: Response) {
+  try {
+    const { post, user } = req.params;
+
+    const posts = await Post.findOne({_id: post});
+    const users = await User.findOne({_id: user});
+
+    if(!users) return res.status(404).json({
+      message: "No user",
+    });
+
+    if(!posts) return res.status(404).json({
+      message: "No posts",
+    });
+
+    users.watchlist.push(posts._id)
+    
+    res.status(200).json({
+      message: "successfully save watchlist",
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error occurred",
+      error: err,
+    });
+  }
+}
+
 export async function getLoadWatchlist(req: Request, res: Response) {
   try {
-    const { data, genre, page } = req.params;
+    const { user } = req.params;
+    const users = await User.findOne({_id: user}).populate('watchlist');
 
-    const limit = 9;
-    const skip = (parseInt(page) - 1) * limit;
-
-    const filter: any = {};
-    if (data && data.toLowerCase() !== "all") {
-      filter.topic = { $regex: data, $options: "i" };
-    }
-    if (genre && genre.toLowerCase() !== "all") {
-      filter.genre = { $regex: genre, $options: "i" };
-    }
-
-    const posts = await Post.find(filter).skip(skip).limit(limit);
-    const total = await Post.countDocuments(filter);
-
+    if(!users) return res.status(404).json({
+      message: "No user",
+    });
+    
     res.status(200).json({
-      message: "successfully received",
-      data: {
-        posts,
-        total,
-        currentPage: parseInt(page),
-        totalPages: Math.ceil(total / limit),
-      },
+      message: "successfully get watchlist",
+      data: users.watchlist
     });
   } catch (err) {
     res.status(500).json({

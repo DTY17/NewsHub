@@ -12,9 +12,8 @@ export interface IUser extends Document {
   email: string;
   password: string;
   roles: Role[];
-  watchlist?: mongoose.Types.ObjectId[];
+  watchlist: mongoose.Types.ObjectId[];
   image?: string;
-  
 }
 
 const userSchema = new mongoose.Schema<IUser>(
