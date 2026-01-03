@@ -71,6 +71,7 @@ export async function searchPost(req: Request, res: Response) {
         },
       });
     }
+    
     const watch_list = u.watchlist?.length || 0;
     posts.forEach((post) => {
       post.isWatchList = false;

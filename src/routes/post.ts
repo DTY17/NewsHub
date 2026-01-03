@@ -24,7 +24,7 @@ const postRouter = Router();
 postRouter.post("/save-post", authenticate , roleCheck([Role.Admin]), insert);
 postRouter.post("/get-post", getPost);
 postRouter.post(
-  "/search-post/:data/:genre/:page",
+  "/search-post/:data/:genre/:page/:user",
   searchPost
 );
 postRouter.post("/post-by-id/:id", getById);
