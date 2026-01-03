@@ -19,6 +19,7 @@ export interface IPost extends Document{
     views : Number
     date : Date
     comment : mongoose.Types.ObjectId[]
+    isWatchList?: boolean
 }
 
 const postSchema = new mongoose.Schema<IPost>({

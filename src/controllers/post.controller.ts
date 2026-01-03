@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import dotenv from "dotenv";
 import { Post } from "../models/postModel";
+import { IUser, User } from "../models/userModel";
 dotenv.config();
 
 export async function insert(req: Request, res: Response) {
@@ -42,7 +43,7 @@ export async function getPost(req: Request, res: Response) {
 
 export async function searchPost(req: Request, res: Response) {
   try {
-    const { data, genre, page } = req.params;
+    const { data, genre, page, user } = req.params;
 
     const limit = 9;
     const skip = (parseInt(page) - 1) * limit;
@@ -55,7 +56,25 @@ export async function searchPost(req: Request, res: Response) {
       filter.genre = { $regex: genre, $options: "i" };
     }
 
+    const u = await User.findOne({ email: user });
+    if (!u) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     const posts = await Post.find(filter).skip(skip).limit(limit);
+    const watch_list = u.watchlist?.length || 0;
+
+    posts.forEach((post) => {
+      post.isWatchList = false;
+    });
+
+    for (let i = 0; i < watch_list; i++) {
+      for (let j = 0; j < posts.length; j++) {
+        if (u.watchlist && u.watchlist[i] == posts[j]._id) {
+          posts[j].isWatchList = true;
+        }
+      }
+    }
     const total = await Post.countDocuments(filter);
 
     res.status(200).json({
@@ -87,7 +106,6 @@ export async function getById(req: Request, res: Response) {
 
     posts.views = Number(posts.views) + 1;
     await posts.save();
-    console.log("post :::::::::::::::::::::::::::::::::::::\n", posts);
     res.status(200).json({
       message: "successfully received",
       data: posts,
@@ -188,7 +206,7 @@ export async function recent(req: Request, res: Response) {
     if (!posts || posts.length === 0) {
       return res.status(200).json({ message: "No posts found", data: [] });
     }
-    
+
     res.status(200).json({
       message: "successfully recieved",
       data: posts,
@@ -296,5 +314,40 @@ export async function getViewSum(req: Request, res: Response) {
     });
   } catch (err) {
     // console.log(err);
+  }
+}
+
+export async function getLoadWatchlist(req: Request, res: Response) {
+  try {
+    const { data, genre, page } = req.params;
+
+    const limit = 9;
+    const skip = (parseInt(page) - 1) * limit;
+
+    const filter: any = {};
+    if (data && data.toLowerCase() !== "all") {
+      filter.topic = { $regex: data, $options: "i" };
+    }
+    if (genre && genre.toLowerCase() !== "all") {
+      filter.genre = { $regex: genre, $options: "i" };
+    }
+
+    const posts = await Post.find(filter).skip(skip).limit(limit);
+    const total = await Post.countDocuments(filter);
+
+    res.status(200).json({
+      message: "successfully received",
+      data: {
+        posts,
+        total,
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(total / limit),
+      },
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: "Error occurred",
+      error: err,
+    });
   }
 }

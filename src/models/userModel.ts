@@ -14,6 +14,7 @@ export interface IUser extends Document {
   roles: Role[];
   watchlist?: mongoose.Types.ObjectId[];
   image?: string;
+  
 }
 
 const userSchema = new mongoose.Schema<IUser>(

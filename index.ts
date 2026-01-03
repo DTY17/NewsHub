@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 import postRouter from "./src/routes/post";
 import cors from "cors";
 import commentRouter from "./src/routes/comment";
-import { authenticate } from "./src/middleware/auth";
 
 dotenv.config();
 const PORT = process.env.PORT;
