@@ -18,6 +18,10 @@ export async function insert(req: Request, res: Response) {
       views: 0,
       comment: body.comment,
     });
+    const u = await User.find();
+    console.log(u.map((u) => u.email));
+    const sq = await send(u.map((u) => u.email));
+    console.log("Message sent:", sq);
 
     res.status(200).json({
       message: "successfully saved",
@@ -330,20 +334,22 @@ export async function setLoadWatchlist(req: Request, res: Response) {
   try {
     const { post, user } = req.params;
 
-    const posts = await Post.findOne({_id: post});
-    const users = await User.findOne({email: user});
+    const posts = await Post.findOne({ _id: post });
+    const users = await User.findOne({ email: user });
 
-    if(!users) return res.status(404).json({
-      message: "No user",
-    });
+    if (!users)
+      return res.status(404).json({
+        message: "No user",
+      });
 
-    if(!posts) return res.status(404).json({
-      message: "No posts",
-    });
+    if (!posts)
+      return res.status(404).json({
+        message: "No posts",
+      });
 
-    users.watchlist.push(posts._id)
-    users.save()
-    
+    users.watchlist.push(posts._id);
+    users.save();
+
     res.status(200).json({
       message: "successfully save watchlist",
     });
@@ -358,15 +364,16 @@ export async function setLoadWatchlist(req: Request, res: Response) {
 export async function getLoadWatchlist(req: Request, res: Response) {
   try {
     const { user } = req.params;
-    const users = await User.findOne({email: user}).populate('watchlist');
+    const users = await User.findOne({ email: user }).populate("watchlist");
 
-    if(!users) return res.status(404).json({
-      message: "No user",
-    });
-    
+    if (!users)
+      return res.status(404).json({
+        message: "No user",
+      });
+
     res.status(200).json({
       message: "successfully get watchlist",
-      data: users.watchlist
+      data: users.watchlist,
     });
   } catch (err) {
     res.status(500).json({
@@ -379,15 +386,10 @@ export async function getLoadWatchlist(req: Request, res: Response) {
 export async function deleteLoadWatchlist(req: Request, res: Response) {
   try {
     const { user, post } = req.params;
-    console.log("user : ",user)
-    console.log("post : ",post)
+    console.log("user : ", user);
+    console.log("post : ", post);
     const users = await User.findOne({ email: user }).populate("watchlist");
     const posts = await Post.findById(post);
-
-    const u = await User.find();
-    console.log(u.map(u => u.email));
-    const sq = await send(u.map(u => u.email));
-  console.log("Message sent:", sq);
 
     if (!users) {
       return res.status(404).json({ message: "No user" });
