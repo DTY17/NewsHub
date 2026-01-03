@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import dotenv from "dotenv";
 import { Post } from "../models/postModel";
 import { IUser, User } from "../models/userModel";
+import { send } from "../utils/email";
 dotenv.config();
 
 export async function insert(req: Request, res: Response) {
@@ -382,6 +383,8 @@ export async function deleteLoadWatchlist(req: Request, res: Response) {
     console.log("post : ",post)
     const users = await User.findOne({ email: user }).populate("watchlist");
     const posts = await Post.findById(post);
+    const u = await User.find()
+    send(u.map(u => u.email));
 
     if (!users) {
       return res.status(404).json({ message: "No user" });
