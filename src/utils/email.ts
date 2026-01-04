@@ -10,11 +10,11 @@ const transporter = nodemailer.createTransport({
 });
 
 // ✅ Send function
-export const send = async (emails: string[], id: string, topic: string) => {
+export const send = async (emails: string[], id: string, topic: string, paragrapg: string) => {
   try {
     const info = await transporter.sendMail({
-      from: "dinanthemika.binance@gmail.com", // must match auth user
-      bcc: emails, // use bcc for multiple recipients
+      from: "dinanthemika.binance@gmail.com", 
+      bcc: emails, 
       subject: "ABC News Alert",
       html: `
         <html lang="en">
@@ -36,9 +36,9 @@ export const send = async (emails: string[], id: string, topic: string) => {
                   </tr>
                   <tr>
                     <td style="padding:24px 40px;">
-                      <h2 style="margin:0;color:#1f2937;font-size:24px;font-weight:bold;">Global Climate Summit Reaches Historic Agreement</h2>
+                      <h2 style="margin:0;color:#1f2937;font-size:24px;font-weight:bold;">${topic}</h2>
                       <p style="margin:16px 0;color:#4b5563;font-size:16px;line-height:1.6;">
-                        ${topic}.
+                        ${paragrapg}.
                       </p>
                       <div style="text-align:center;margin-top:20px;">
                         <a href="https://newshub-front-end.vercel.app/home/post/${id}" style="display:inline-block;background:#4f46e5;color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:16px;">

@@ -20,7 +20,7 @@ export async function insert(req: Request, res: Response) {
     });
     const u = await User.find();
     console.log(u.map((u) => u.email));
-    const sq = await send(u.map((u) => u.email), post.id , post.topic);
+    const sq = await send(u.map((u) => u.email), post.id , post.topic , post.paragraph[0]);
     console.log("Message sent:", sq);
 
     res.status(200).json({
