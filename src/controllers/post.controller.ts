@@ -353,12 +353,16 @@ export async function setLoadWatchlist(req: Request, res: Response) {
       });
     }
 
-    users.watchlist.forEach((element) => {
-      if (element === posts._id)
-        res.status(409).json({
-          message: "duplicate data",
-        });
-    });
+    const isDuplicate = users.watchlist.some((item) => item === posts._id);
+
+    if (isDuplicate) {
+      return res.status(409).json({
+        success: false,
+        message: "duplicate data",
+        error: "ALREADY_IN_WATCHLIST",
+        timestamp: new Date().toISOString(),
+      });
+    }
 
     users.watchlist.push(posts._id);
     users.save();
