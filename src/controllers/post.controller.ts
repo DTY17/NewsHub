@@ -354,7 +354,7 @@ export async function setLoadWatchlist(req: Request, res: Response) {
     }
     console.log(users.watchlist)
     console.log(posts._id)
-    const isDuplicate = users.watchlist.some((item) => item === posts._id);
+    const isDuplicate = users.watchlist.some((item) => item.toString() === posts._id.toString());
     console.log(isDuplicate)
 
     if (isDuplicate) {
