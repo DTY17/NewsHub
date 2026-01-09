@@ -29,6 +29,7 @@ export const registerUser = async (req: Request, res: Response) => {
       lastname: lastname,
       email: email,
       password: hash,
+      image:"https://res.cloudinary.com/dxxn3lxqw/image/upload/v1767979256/images_mfu4dy.png"
       roles: [Role.User],
       watchlist: watchlist,
     });
