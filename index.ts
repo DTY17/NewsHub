@@ -19,6 +19,7 @@ const allowedOrigins = [
   "https://news-hub-lime-two.vercel.app",
   "https://newshub-front-end-vgyl.vercel.app",
   "https://newshub-front-end.vercel.app",
+  "https://news-hub-lime-two.vercel.app/"
 ];
 
 app.use(
