@@ -39,7 +39,7 @@ app.use("/api/abc/user", auth_1.default);
 app.use("/api/abc/post", post_1.default);
 app.use("/api/abc/comment", comment_1.default);
 app.get("/api/abc/getkey", (req, res) => {
-    return res.status(200).json({ key: process.env.GEMINI });
+    return res.status(200).json({ key: GEMINI });
 });
 mongoose_1.default
     .connect(MONGO_URI)

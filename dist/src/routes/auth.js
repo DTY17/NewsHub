@@ -13,4 +13,5 @@ authrouter.post("/admin/login", auth_controller_1.loginAdmin);
 authrouter.post("/refresh/:token_r", auth_controller_1.refreshToken);
 authrouter.get("/valid/:token", auth_controller_1.validToken);
 authrouter.post("/update/:id", auth_1.authenticate, (0, roleCheck_1.roleCheck)([userModel_1.Role.User]), auth_controller_1.updateAuth);
+authrouter.get("/users", auth_1.authenticate, (0, roleCheck_1.roleCheck)([userModel_1.Role.User]), auth_controller_1.getUsers);
 exports.default = authrouter;

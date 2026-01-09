@@ -9,7 +9,7 @@ import { signAccessToken, signRefreshToken } from "../utils/token";
 dotenv.config();
 const secret = process.env.JWT_SECRET as string;
 export interface AUthRequest extends Request {
-  user?: any
+  user?: any;
 }
 
 export const registerUser = async (req: Request, res: Response) => {
@@ -77,15 +77,15 @@ export const loginUser = async (req: Request, res: Response) => {
         existingUser.password
       );
       if (passwordCheck) {
-        const token = signAccessToken(existingUser)
-        const refresh_token = signRefreshToken(existingUser)
+        const token = signAccessToken(existingUser);
+        const refresh_token = signRefreshToken(existingUser);
         return res.status(201).json({
           message: "User registed",
           data: {
             email: existingUser.email,
             roles: existingUser.roles,
             token: token,
-            refresh_token: refresh_token
+            refresh_token: refresh_token,
           },
         });
       }
@@ -106,9 +106,8 @@ export const refreshToken = async (req: Request, res: Response) => {
   const REFRESH_SECRET = process.env.REFRESH_SECRET as string;
   try {
     const { token_r } = req.params;
-    console.log(refreshToken)
+    console.log(refreshToken);
     if (!refreshToken) {
-      
       return res.status(400).json({
         message: true,
       });
@@ -126,7 +125,6 @@ export const refreshToken = async (req: Request, res: Response) => {
       message: true,
       token: token,
     });
-    
   } catch (err) {
     //console.log(err)
     return res.status(200).json({
@@ -139,17 +137,17 @@ export const validToken = async (req: AUthRequest, res: Response) => {
   const JWT_SECRET = process.env.JWT_SECRET as string;
   const { token } = req.params;
   try {
-    const payload = jwt.verify(token, JWT_SECRET)
-    req.user = payload
+    const payload = jwt.verify(token, JWT_SECRET);
+    req.user = payload;
     res.status(200).json({
-      message: true
-    })
+      message: true,
+    });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(200).json({
-      message: false
-    })
-  }      
+      message: false,
+    });
+  }
 };
 
 export const loginAdmin = async (req: Request, res: Response) => {
@@ -163,15 +161,15 @@ export const loginAdmin = async (req: Request, res: Response) => {
         existingUser.password
       );
       if (passwordCheck) {
-        const token = signAccessToken(existingUser)
-        const refresh_token = signRefreshToken(existingUser)
+        const token = signAccessToken(existingUser);
+        const refresh_token = signRefreshToken(existingUser);
         return res.status(201).json({
           message: "Admin Login Successful",
           data: {
             email: existingUser.email,
             roles: existingUser.roles,
             token: token,
-            refresh_token: refresh_token
+            refresh_token: refresh_token,
           },
         });
       }
@@ -190,24 +188,39 @@ export const loginAdmin = async (req: Request, res: Response) => {
 
 export const updateAuth = async (req: Request, res: Response) => {
   try {
-    const { firstName , lastName , avatarUrl } = req.body;
+    const { firstName, lastName, avatarUrl } = req.body;
     const { id } = req.params;
-    const user = await User.findOne({ email : id });
-    console.log("image : ",avatarUrl)
-    if (!user) { return res.status(404).json({ message: "User not found" }); }
+    const user = await User.findOne({ email: id });
+    console.log("image : ", avatarUrl);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    if (firstName) user.firstname = firstName; 
-    if (lastName) user.lastname = lastName; 
+    if (firstName) user.firstname = firstName;
+    if (lastName) user.lastname = lastName;
     if (avatarUrl) user.image = avatarUrl;
 
-    user.save()
-    return res.status(200).json({ 
-      message: "Updated" 
-    })
+    user.save();
+    return res.status(200).json({
+      message: "Updated",
+    });
   } catch (err) {
-    return res.status(500).json({ 
-      message: "NotUpdated" 
-    })
+    return res.status(500).json({
+      message: "NotUpdated",
+    });
   }
 };
 
+export const getUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await User.find({ roles: Role.User });
+    return res.status(200).json({
+      users: users,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Internal; server error",
+    });
+  }
+};

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAuth = exports.loginAdmin = exports.validToken = exports.refreshToken = exports.loginUser = exports.userDetails = exports.registerUser = void 0;
+exports.getUsers = exports.updateAuth = exports.loginAdmin = exports.validToken = exports.refreshToken = exports.loginUser = exports.userDetails = exports.registerUser = void 0;
 const userModel_1 = require("../models/userModel");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const userModel_2 = require("../models/userModel");
@@ -80,7 +80,7 @@ const loginUser = async (req, res) => {
                         email: existingUser.email,
                         roles: existingUser.roles,
                         token: token,
-                        refresh_token: refresh_token
+                        refresh_token: refresh_token,
                     },
                 });
             }
@@ -137,13 +137,13 @@ const validToken = async (req, res) => {
         const payload = jsonwebtoken_1.default.verify(token, JWT_SECRET);
         req.user = payload;
         res.status(200).json({
-            message: true
+            message: true,
         });
     }
     catch (err) {
         console.log(err);
         res.status(200).json({
-            message: false
+            message: false,
         });
     }
 };
@@ -164,7 +164,7 @@ const loginAdmin = async (req, res) => {
                         email: existingUser.email,
                         roles: existingUser.roles,
                         token: token,
-                        refresh_token: refresh_token
+                        refresh_token: refresh_token,
                     },
                 });
             }
@@ -200,13 +200,28 @@ const updateAuth = async (req, res) => {
             user.image = avatarUrl;
         user.save();
         return res.status(200).json({
-            message: "Updated"
+            message: "Updated",
         });
     }
     catch (err) {
         return res.status(500).json({
-            message: "NotUpdated"
+            message: "NotUpdated",
         });
     }
 };
 exports.updateAuth = updateAuth;
+const getUsers = async (req, res) => {
+    try {
+        const users = await userModel_1.User.find({ roles: userModel_2.Role.User });
+        return res.status(200).json({
+            users: users,
+        });
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).json({
+            message: "Internal; server error",
+        });
+    }
+};
+exports.getUsers = getUsers;
