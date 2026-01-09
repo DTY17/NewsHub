@@ -26,6 +26,7 @@ const registerUser = async (req, res) => {
             lastname: lastname,
             email: email,
             password: hash,
+            image: "https://res.cloudinary.com/dxxn3lxqw/image/upload/v1767979256/images_mfu4dy.png",
             roles: [userModel_2.Role.User],
             watchlist: watchlist,
         });
