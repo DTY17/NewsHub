@@ -14,6 +14,6 @@ authrouter.post("/admin/login",loginAdmin)
 authrouter.post("/refresh/:token_r", refreshToken)
 authrouter.get("/valid/:token", validToken)
 authrouter.post("/update/:id", authenticate , roleCheck([Role.User]) , updateAuth)
-authrouter.get("/users",authenticate , roleCheck([Role.User]), getUsers)
+authrouter.get("/users",authenticate , roleCheck([Role.Admin]), getUsers)
 
 export default authrouter
