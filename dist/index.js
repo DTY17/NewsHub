@@ -13,13 +13,14 @@ const comment_1 = __importDefault(require("./src/routes/comment"));
 dotenv_1.default.config();
 const PORT = process.env.PORT;
 const MONGO_URI = process.env.MONGO_URI;
+const GEMINI = process.env.GEMINI_API;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
 const allowedOrigins = [
     "http://localhost:5173",
     "https://news-hub-lime-two.vercel.app",
     "https://newshub-front-end-vgyl.vercel.app",
-    "https://newshub-front-end.vercel.app"
+    "https://newshub-front-end.vercel.app",
 ];
 app.use((0, cors_1.default)({
     origin: function (origin, callback) {
@@ -37,6 +38,9 @@ app.use((0, cors_1.default)({
 app.use("/api/abc/user", auth_1.default);
 app.use("/api/abc/post", post_1.default);
 app.use("/api/abc/comment", comment_1.default);
+app.get("/api/abc/getkey", (req, res) => {
+    return res.status(200).json({ key: process.env.GEMINI });
+});
 mongoose_1.default
     .connect(MONGO_URI)
     .then(() => {

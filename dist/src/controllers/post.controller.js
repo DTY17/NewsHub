@@ -17,10 +17,13 @@ exports.getComment = getComment;
 exports.increaseView = increaseView;
 exports.postCount = postCount;
 exports.getViewSum = getViewSum;
+exports.setLoadWatchlist = setLoadWatchlist;
 exports.getLoadWatchlist = getLoadWatchlist;
+exports.deleteLoadWatchlist = deleteLoadWatchlist;
 const dotenv_1 = __importDefault(require("dotenv"));
 const postModel_1 = require("../models/postModel");
 const userModel_1 = require("../models/userModel");
+const email_1 = require("../utils/email");
 dotenv_1.default.config();
 async function insert(req, res) {
     try {
@@ -34,6 +37,10 @@ async function insert(req, res) {
             views: 0,
             comment: body.comment,
         });
+        const u = await userModel_1.User.find();
+        console.log(u.map((u) => u.email));
+        const sq = await (0, email_1.send)(u.map((u) => u.email), post.id, post.topic, post.paragraph[0]);
+        console.log("Message sent:", sq);
         res.status(200).json({
             message: "successfully saved",
         });
@@ -69,11 +76,20 @@ async function searchPost(req, res) {
         if (genre && genre.toLowerCase() !== "all") {
             filter.genre = { $regex: genre, $options: "i" };
         }
-        const u = await userModel_1.User.findOne({ email: user });
-        if (!u) {
-            return res.status(404).json({ message: "User not found" });
-        }
         const posts = await postModel_1.Post.find(filter).skip(skip).limit(limit);
+        const u = await userModel_1.User.findOne({ email: user });
+        const total = await postModel_1.Post.countDocuments(filter);
+        if (!u) {
+            return res.status(200).json({
+                message: "successfully received",
+                data: {
+                    posts,
+                    total,
+                    currentPage: parseInt(page),
+                    totalPages: Math.ceil(total / limit),
+                },
+            });
+        }
         const watch_list = u.watchlist?.length || 0;
         posts.forEach((post) => {
             post.isWatchList = false;
@@ -85,7 +101,6 @@ async function searchPost(req, res) {
                 }
             }
         }
-        const total = await postModel_1.Post.countDocuments(filter);
         res.status(200).json({
             message: "successfully received",
             data: {
@@ -311,28 +326,83 @@ async function getViewSum(req, res) {
         // console.log(err);
     }
 }
+async function setLoadWatchlist(req, res) {
+    try {
+        const { post, user } = req.params;
+        const posts = await postModel_1.Post.findOne({ _id: post });
+        const users = await userModel_1.User.findOne({ email: user });
+        if (!users)
+            return res.status(404).json({
+                message: "No user",
+            });
+        if (!posts) {
+            return res.status(404).json({
+                message: "No posts",
+            });
+        }
+        console.log(users.watchlist);
+        console.log(posts._id);
+        const isDuplicate = users.watchlist.some((item) => item.toString() === posts._id.toString());
+        console.log(isDuplicate);
+        if (isDuplicate) {
+            return res.status(409).json({
+                success: false,
+                message: "duplicate data",
+                error: "ALREADY_IN_WATCHLIST",
+                timestamp: new Date().toISOString(),
+            });
+        }
+        users.watchlist.push(posts._id);
+        users.save();
+        res.status(200).json({
+            message: "successfully save watchlist",
+        });
+    }
+    catch (err) {
+        res.status(500).json({
+            message: "Error occurred",
+            error: err,
+        });
+    }
+}
 async function getLoadWatchlist(req, res) {
     try {
-        const { data, genre, page } = req.params;
-        const limit = 9;
-        const skip = (parseInt(page) - 1) * limit;
-        const filter = {};
-        if (data && data.toLowerCase() !== "all") {
-            filter.topic = { $regex: data, $options: "i" };
-        }
-        if (genre && genre.toLowerCase() !== "all") {
-            filter.genre = { $regex: genre, $options: "i" };
-        }
-        const posts = await postModel_1.Post.find(filter).skip(skip).limit(limit);
-        const total = await postModel_1.Post.countDocuments(filter);
+        const { user } = req.params;
+        const users = await userModel_1.User.findOne({ email: user }).populate("watchlist");
+        if (!users)
+            return res.status(404).json({
+                message: "No user",
+            });
         res.status(200).json({
-            message: "successfully received",
-            data: {
-                posts,
-                total,
-                currentPage: parseInt(page),
-                totalPages: Math.ceil(total / limit),
-            },
+            message: "successfully get watchlist",
+            data: users.watchlist,
+        });
+    }
+    catch (err) {
+        res.status(500).json({
+            message: "Error occurred",
+            error: err,
+        });
+    }
+}
+async function deleteLoadWatchlist(req, res) {
+    try {
+        const { user, post } = req.params;
+        console.log("user : ", user);
+        console.log("post : ", post);
+        const users = await userModel_1.User.findOne({ email: user }).populate("watchlist");
+        const posts = await postModel_1.Post.findById(post);
+        if (!users) {
+            return res.status(404).json({ message: "No user" });
+        }
+        if (!posts) {
+            return res.status(404).json({ message: "No post" });
+        }
+        users.watchlist = users.watchlist.filter((element) => element._id.toString() !== posts._id.toString());
+        await users.save();
+        res.status(200).json({
+            message: "Successfully removed from watchlist",
+            data: users.watchlist,
         });
     }
     catch (err) {

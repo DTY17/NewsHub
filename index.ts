@@ -1,4 +1,5 @@
 import express from "express";
+import { Request, Response } from "express";
 import authrouter from "./src/routes/auth";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -9,6 +10,7 @@ import commentRouter from "./src/routes/comment";
 dotenv.config();
 const PORT = process.env.PORT;
 const MONGO_URI = process.env.MONGO_URI as string;
+const GEMINI = process.env.GEMINI_API as string;
 
 const app = express();
 app.use(express.json());
@@ -16,7 +18,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "https://news-hub-lime-two.vercel.app",
   "https://newshub-front-end-vgyl.vercel.app",
-  "https://newshub-front-end.vercel.app"
+  "https://newshub-front-end.vercel.app",
 ];
 
 app.use(
@@ -37,6 +39,10 @@ app.use(
 app.use("/api/abc/user", authrouter);
 app.use("/api/abc/post", postRouter);
 app.use("/api/abc/comment", commentRouter);
+
+app.get("/api/abc/getkey", (req: Request, res: Response) => {
+  return res.status(200).json({ key: process.env.GEMINI });
+});
 
 mongoose
   .connect(MONGO_URI)
