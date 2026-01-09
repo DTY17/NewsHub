@@ -41,7 +41,7 @@ app.use("/api/abc/post", postRouter);
 app.use("/api/abc/comment", commentRouter);
 
 app.get("/api/abc/getkey", (req: Request, res: Response) => {
-  return res.status(200).json({ key: process.env.GEMINI });
+  return res.status(200).json({ key: GEMINI });
 });
 
 mongoose
